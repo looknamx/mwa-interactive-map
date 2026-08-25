@@ -1,0 +1,7 @@
+.pin-gate{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#061b35,#0a4169)}
+.pin-gate.is-unlocked{display:none}
+.pin-card{width:min(360px,100%);display:flex;flex-direction:column;align-items:center;padding:32px;border:1px solid rgba(125,234,255,.25);border-radius:16px;color:#fff;background:rgba(8,38,74,.96);box-shadow:0 24px 70px rgba(0,0,0,.35);text-align:center}
+.pin-mark{width:64px;height:64px;display:grid;place-items:center;margin-bottom:14px;border:3px solid #bdf6ff;border-radius:50%;color:#08264a;background:#fff;font-weight:900;box-shadow:inset 0 0 0 5px rgba(0,184,212,.18)}
+.pin-card small{color:#75e8fb;font-weight:700}.pin-card h2{margin:5px 0 3px;font-size:23px}.pin-card p{margin:0 0 18px;color:#b9d1df;font-size:12px}
+.pin-card input{width:150px;padding:12px;border:1px solid #5aaec1;border-radius:8px;color:#fff;background:#061c34;text-align:center;font:700 24px Consolas,monospace;letter-spacing:.45em}.pin-card input:focus{outline:3px solid rgba(0,184,212,.3)}
+.pin-card button{width:150px;margin-top:10px;padding:10px;border:0;border-radius:7px;color:#06203b;background:#68e9fa;font-weight:800}.pin-card span{min-height:18px;margin-top:8px;color:#ffadba;font-size:11px}

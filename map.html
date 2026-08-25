@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="แผนที่โรงงานผลิตน้ำแบบโต้ตอบ การประปานครหลวง">
+  <title>แผนที่โรงงานผลิตน้ำ | การประปานครหลวง</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <!-- เวอร์ชันทดลอง: เปลี่ยน href เป็นไฟล์ leaflet.css ภายในเซิร์ฟเวอร์ได้ในภายหลัง -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynh3Z38ONvFUcsVJk/CWb+Md7hIY=" crossorigin="">
+  <!-- CSS สำรองที่จำเป็นต่อการจัดตำแหน่ง pane กรณี CDN stylesheet ถูกบล็อก -->
+  <link rel="stylesheet" href="leaflet-fallback.css">
+  <link rel="stylesheet" href="map.css">
+</head>
+<body class="embed-page">
+  <header class="site-header" hidden>
+    <div class="brand-mark" aria-hidden="true">กปน.</div>
+    <div>
+      <p class="eyebrow">การประปานครหลวง</p>
+      <h1>แผนที่โรงงานผลิตน้ำ</h1>
+    </div>
+    <div class="header-badge"><span></span> Interactive Plant Map</div>
+  </header>
+
+  <main class="app-shell">
+    <aside class="sidebar" aria-label="เครื่องมือแผนที่">
+      <section class="control-section search-section">
+        <label for="label-search">ค้นหาสถานที่</label>
+        <div class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="label-search" type="search" placeholder="ค้นหาชื่อ Label..." autocomplete="off">
+          <button id="clear-search" type="button" aria-label="ล้างคำค้นหา" title="ล้างคำค้นหา">×</button>
+        </div>
+        <div id="search-results" class="search-results" aria-live="polite"></div>
+      </section>
+
+      <section class="control-section">
+        <div class="section-heading">
+          <h2>ประเภทพื้นที่</h2>
+          <button id="toggle-all" class="text-button" type="button">ซ่อนทั้งหมด</button>
+        </div>
+        <div id="category-filters" class="category-filters"></div>
+      </section>
+
+    </aside>
+
+    <section class="map-panel" aria-label="แผนที่โรงงานผลิตน้ำ">
+      <div class="map-toolbar">
+        <div>
+          <strong>ผังพื้นที่โรงงานผลิตน้ำ</strong>
+          <span><i></i> พร้อมใช้งาน</span>
+        </div>
+        <button id="reset-view" type="button" title="กลับไปยังมุมมองเริ่มต้น"><span aria-hidden="true">⌂</span> มุมมองเริ่มต้น</button>
+      </div>
+      <div id="map" role="application" aria-label="แผนที่แบบโต้ตอบ ใช้เมาส์หรือนิ้วเพื่อซูมและเลื่อน"></div>
+      <div class="map-hint">เลื่อนเพื่อสำรวจ • ใช้ปุ่ม + − หรือสองนิ้วเพื่อซูม • คลิก Label เพื่อดูรายละเอียด</div>
+      <div id="map-error" class="map-error" hidden>
+        <strong>ไม่สามารถโหลดแผนที่ได้</strong>
+        <span>กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตสำหรับ Leaflet CDN แล้วลองใหม่</span>
+      </div>
+    </section>
+  </main>
+
+  <footer hidden>© การประปานครหลวง • ระบบแผนที่โรงงานผลิตน้ำ</footer>
+
+  <!-- เวอร์ชันทดลอง: เปลี่ยน src เป็นไฟล์ leaflet.js ภายในเซิร์ฟเวอร์ได้ในภายหลัง -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="map-data.js"></script>
+  <script src="map.js"></script>
+</body>
+</html>
