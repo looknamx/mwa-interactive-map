@@ -10,9 +10,45 @@
   const status = byId("admin-status");
   const fields = {
     index: byId("edit-index"), id: byId("field-id"), label: byId("field-label"), name: byId("field-name"),
-    x: byId("field-x"), y: byId("field-y"), category: byId("field-category"), description: byId("field-description"),
-    downloadLabel: byId("field-download-label"), downloadUrl: byId("field-download-url"), sample: byId("field-sample")
+    x: byId("field-x"), y: byId("field-y"), category: byId("field-category"), description: byId("field-description")
   };
+
+  function addDocumentRow(file = {}) {
+    const row = document.createElement("div");
+    row.className = "document-item";
+    row.innerHTML = '<span class="document-index"></span>' +
+      '<button class="remove-document" type="button" aria-label="ลบเอกสาร" title="ลบเอกสาร">×</button>' +
+      '<label>ชื่อเอกสาร <input class="document-label" placeholder="ข้อมูลสถานที่ (PDF)" value="' + escapeHtml(file.label || "") + '"></label>' +
+      '<label>URL เอกสาร <input class="document-url" placeholder="documents/example.pdf" value="' + escapeHtml(file.url || "") + '"></label>' +
+      '<label class="document-sample"><input class="document-is-sample" type="checkbox"' + (file.sample !== false ? " checked" : "") + '> ระบุว่าเป็นไฟล์ตัวอย่าง</label>';
+    row.querySelector(".remove-document").addEventListener("click", function () {
+      row.remove();
+      if (!byId("document-list").children.length) addDocumentRow();
+      updateDocumentNumbers();
+    });
+    byId("document-list").appendChild(row);
+    updateDocumentNumbers();
+  }
+
+  function updateDocumentNumbers() {
+    Array.from(byId("document-list").children).forEach((row, index) => {
+      row.querySelector(".document-index").textContent = "เอกสาร " + (index + 1);
+    });
+  }
+
+  function setDocuments(files) {
+    byId("document-list").innerHTML = "";
+    const list = Array.isArray(files) && files.length ? files : [{}];
+    list.forEach(addDocumentRow);
+  }
+
+  function getDocuments() {
+    return Array.from(byId("document-list").querySelectorAll(".document-item")).map(row => ({
+      label: row.querySelector(".document-label").value.trim() || "เอกสารที่เกี่ยวข้อง",
+      url: row.querySelector(".document-url").value.trim(),
+      sample: row.querySelector(".document-is-sample").checked
+    })).filter(file => file.url);
+  }
 
   function escapeHtml(value) {
     return String(value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -71,10 +107,7 @@
     const item = items[index];
     fields.index.value = index;
     ["id", "label", "name", "x", "y", "category", "description"].forEach(key => { fields[key].value = item[key]; });
-    const file = (item.downloads || [])[0] || {};
-    fields.downloadLabel.value = file.label || "";
-    fields.downloadUrl.value = file.url || "";
-    fields.sample.checked = file.sample !== false;
+    setDocuments(item.downloads);
     byId("form-title").textContent = "แก้ไข Label";
     byId("delete-label").hidden = false;
     if (innerWidth < 701) document.querySelector(".admin-panel").scrollIntoView({ behavior: "smooth" });
@@ -83,7 +116,7 @@
   function clearForm() {
     form.reset();
     fields.index.value = "";
-    fields.sample.checked = true;
+    setDocuments([]);
     byId("form-title").textContent = "เพิ่ม Label ใหม่";
     byId("delete-label").hidden = true;
   }
@@ -91,8 +124,7 @@
   form.addEventListener("submit", async event => {
     event.preventDefault();
     const index = fields.index.value;
-    const file = fields.downloadUrl.value.trim() ? [{ label: fields.downloadLabel.value.trim() || "เอกสารที่เกี่ยวข้อง", url: fields.downloadUrl.value.trim(), sample: fields.sample.checked }] : [];
-    const item = { id: fields.id.value.trim(), label: fields.label.value.trim(), name: fields.name.value.trim(), x: Number(fields.x.value), y: Number(fields.y.value), category: fields.category.value, description: fields.description.value.trim(), downloads: file };
+    const item = { id: fields.id.value.trim(), label: fields.label.value.trim(), name: fields.name.value.trim(), x: Number(fields.x.value), y: Number(fields.y.value), category: fields.category.value, description: fields.description.value.trim(), downloads: getDocuments() };
     if (items.some((entry, itemIndex) => entry.id === item.id && itemIndex !== Number(index))) { status.textContent = "ID นี้ถูกใช้งานแล้ว"; return; }
     const previous = JSON.parse(JSON.stringify(items));
     if (index === "") items.push(item); else items[Number(index)] = item;
@@ -101,6 +133,7 @@
   });
 
   byId("new-label").addEventListener("click", clearForm);
+  byId("add-document").addEventListener("click", function () { addDocumentRow(); });
   byId("delete-label").addEventListener("click", async () => {
     const index = Number(fields.index.value);
     if (!Number.isInteger(index) || !confirm("ต้องการลบ Label นี้หรือไม่?")) return;
@@ -144,5 +177,6 @@
     }
   });
 
+  setDocuments([]);
   load();
 })();

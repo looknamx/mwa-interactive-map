@@ -60,7 +60,9 @@ function validLabels(labels) {
     Number.isFinite(item.x) && item.x >= 0 && item.x <= 100 &&
     Number.isFinite(item.y) && item.y >= 0 && item.y <= 100 &&
     ["production", "transmission", "civil", "support"].includes(item.category) &&
-    typeof item.description === "string" && Array.isArray(item.downloads)
+    typeof item.description === "string" && Array.isArray(item.downloads) && item.downloads.length <= 20 &&
+    item.downloads.every(file => file && typeof file.label === "string" && file.label.length <= 200 &&
+      typeof file.url === "string" && file.url.length <= 1000 && typeof file.sample === "boolean")
   );
 }
 
