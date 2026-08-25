@@ -136,6 +136,11 @@ h1 { margin: 0; font-size: clamp(20px, 2.2vw, 30px); line-height: 1.2; }
 .map-label::before { content: ""; position: absolute; left: -5px; top: 50%; width: 8px; height: 8px; background: inherit; border-left: 1px solid color-mix(in srgb, var(--label-color) 60%, #fff); border-bottom: 1px solid color-mix(in srgb, var(--label-color) 60%, #fff); transform: translateY(-50%) rotate(45deg); }
 .map-label:hover, .map-label:focus { outline: none; transform: translateY(-50%) scale(1.06); box-shadow: 0 6px 15px rgba(0,27,50,.34); }
 .label-dot { width: 7px; height: 7px; border: 2px solid rgba(255,255,255,.65); border-radius: 50%; background: #fff; }
+.google-map-label { position: absolute; z-index: 2; transform: translate(6px, -50%); }
+.google-map-label:hover, .google-map-label:focus { transform: translate(6px, -50%) scale(1.06); }
+.gm-style .popup-card { min-width: 260px; max-width: 330px; padding: 3px 2px; text-align: left; }
+.gm-style .gm-style-iw-c { border-radius: 10px; }
+.gm-style .gm-style-iw-d { overflow: auto !important; }
 .plant-popup .leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 12px 35px rgba(3,30,57,.25); }
 .plant-popup .leaflet-popup-content { margin: 16px 17px; }
 .popup-card h3 { margin: 7px 0 0; color: var(--navy-900); font-size: 17px; line-height: 1.35; }

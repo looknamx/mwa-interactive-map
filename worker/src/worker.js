@@ -57,8 +57,8 @@ function validLabels(labels) {
   return Array.isArray(labels) && labels.length <= 500 && labels.every(item =>
     item && typeof item.id === "string" && item.id.length <= 100 &&
     typeof item.label === "string" && typeof item.name === "string" &&
-    Number.isFinite(item.x) && item.x >= 0 && item.x <= 100 &&
-    Number.isFinite(item.y) && item.y >= 0 && item.y <= 100 &&
+    Number.isFinite(item.lat) && item.lat >= -90 && item.lat <= 90 &&
+    Number.isFinite(item.lng) && item.lng >= -180 && item.lng <= 180 &&
     ["production", "transmission", "civil", "support"].includes(item.category) &&
     typeof item.description === "string" && Array.isArray(item.downloads) && item.downloads.length <= 20 &&
     item.downloads.every(file => file && typeof file.label === "string" && file.label.length <= 200 &&

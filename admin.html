@@ -16,7 +16,7 @@
         <label>ID <input id="field-id" required placeholder="เช่น chemical-building"></label>
         <label>ข้อความบน Label <input id="field-label" required placeholder="CHEMICAL BUILDING"></label>
         <label>ชื่อสถานที่ <input id="field-name" required placeholder="อาคารสารเคมี"></label>
-        <div class="form-row"><label>x (%) <input id="field-x" type="number" min="0" max="100" step="0.01" required></label><label>y (%) <input id="field-y" type="number" min="0" max="100" step="0.01" required></label></div>
+        <div class="form-row"><label>Latitude <input id="field-lat" type="number" min="-90" max="90" step="0.00000001" required></label><label>Longitude <input id="field-lng" type="number" min="-180" max="180" step="0.00000001" required></label></div>
         <label>ประเภท <select id="field-category" required><option value="production">ระบบผลิตน้ำ</option><option value="transmission">ระบบส่งน้ำ</option><option value="civil">งานโยธา</option><option value="support">อาคารสนับสนุน</option></select></label>
         <label>รายละเอียด <textarea id="field-description" rows="4" required></textarea></label>
         <div class="documents-heading"><div><strong>เอกสารที่เกี่ยวข้อง</strong><small>เพิ่มได้มากกว่า 1 ไฟล์</small></div><button id="add-document" type="button">+ เพิ่มไฟล์</button></div>
@@ -25,7 +25,7 @@
       </form>
       <p id="admin-status" class="admin-status" aria-live="polite"></p>
     </aside>
-    <section class="workspace"><div class="preview-head"><div><strong>ตัวอย่างแผนที่</strong><span>คลิกบนภาพเพื่อกรอกค่า x, y</span></div><button id="reset-data" type="button">คืนค่าข้อมูลเริ่มต้น</button></div><iframe id="map-preview" src="map.html?admin=1&amp;v=5" title="ตัวอย่างแผนที่สำหรับกำหนดตำแหน่ง"></iframe><div class="list-head"><h2>Label ทั้งหมด</h2><span id="label-count"></span></div><div id="label-list" class="label-list"></div></section>
+    <section class="workspace"><div class="preview-head"><div><strong>ตัวอย่าง Google Maps</strong><span>คลิกบนแผนที่เพื่อกรอก Latitude และ Longitude</span></div><button id="reset-data" type="button">คืนค่าข้อมูลเริ่มต้น</button></div><iframe id="map-preview" src="map.html?admin=1&amp;v=6" title="ตัวอย่าง Google Maps สำหรับกำหนดตำแหน่ง"></iframe><div class="list-head"><h2>Label ทั้งหมด</h2><span id="label-count"></span></div><div id="label-list" class="label-list"></div></section>
   </main>
   <script src="map-data.js?v=5"></script><script src="admin-auth.js?v=5"></script><script src="admin.js?v=5"></script>
 </body></html>

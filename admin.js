@@ -10,8 +10,21 @@
   const status = byId("admin-status");
   const fields = {
     index: byId("edit-index"), id: byId("field-id"), label: byId("field-label"), name: byId("field-name"),
-    x: byId("field-x"), y: byId("field-y"), category: byId("field-category"), description: byId("field-description")
+    lat: byId("field-lat"), lng: byId("field-lng"), category: byId("field-category"), description: byId("field-description")
   };
+
+  function normalizeLabel(item) {
+    if (Number.isFinite(item.lat) && Number.isFinite(item.lng)) return item;
+    const x = Number.isFinite(item.x) ? item.x : 50;
+    const y = Number.isFinite(item.y) ? item.y : 50;
+    const normalized = Object.assign({}, item, {
+      lat: window.MAP_CONFIG.center.lat + (50 - y) * 0.00012,
+      lng: window.MAP_CONFIG.center.lng + (x - 50) * 0.0002
+    });
+    delete normalized.x;
+    delete normalized.y;
+    return normalized;
+  }
 
   function addDocumentRow(file = {}) {
     const row = document.createElement("div");
@@ -60,7 +73,7 @@
       const response = await fetch(apiUrl + "/api/labels", { cache: "no-store" });
       if (!response.ok) throw new Error("โหลดข้อมูลไม่สำเร็จ");
       const result = await response.json();
-      items = Array.isArray(result.labels) && result.labels.length ? result.labels : defaults;
+      items = Array.isArray(result.labels) && result.labels.length ? result.labels.map(normalizeLabel) : defaults;
       status.textContent = "เชื่อมต่อฐานข้อมูลแล้ว";
       render();
     } catch (error) {
@@ -96,7 +109,7 @@
       button.type = "button";
       button.className = "label-card";
       button.style.setProperty("--card-color", colors[item.category] || "#999");
-      button.innerHTML = '<i></i><span><strong>' + escapeHtml(item.label) + '</strong><small>' + escapeHtml(item.name) + " • x " + item.x + ", y " + item.y + "</small></span>";
+      button.innerHTML = '<i></i><span><strong>' + escapeHtml(item.label) + '</strong><small>' + escapeHtml(item.name) + " • " + Number(item.lat).toFixed(6) + ", " + Number(item.lng).toFixed(6) + "</small></span>";
       button.addEventListener("click", () => edit(index));
       list.appendChild(button);
     });
@@ -106,7 +119,9 @@
   function edit(index) {
     const item = items[index];
     fields.index.value = index;
-    ["id", "label", "name", "x", "y", "category", "description"].forEach(key => { fields[key].value = item[key]; });
+    ["id", "label", "name", "category", "description"].forEach(key => { fields[key].value = item[key]; });
+    fields.lat.value = item.lat;
+    fields.lng.value = item.lng;
     setDocuments(item.downloads);
     byId("form-title").textContent = "แก้ไข Label";
     byId("delete-label").hidden = false;
@@ -124,7 +139,7 @@
   form.addEventListener("submit", async event => {
     event.preventDefault();
     const index = fields.index.value;
-    const item = { id: fields.id.value.trim(), label: fields.label.value.trim(), name: fields.name.value.trim(), x: Number(fields.x.value), y: Number(fields.y.value), category: fields.category.value, description: fields.description.value.trim(), downloads: getDocuments() };
+    const item = { id: fields.id.value.trim(), label: fields.label.value.trim(), name: fields.name.value.trim(), lat: Number(fields.lat.value), lng: Number(fields.lng.value), category: fields.category.value, description: fields.description.value.trim(), downloads: getDocuments() };
     if (items.some((entry, itemIndex) => entry.id === item.id && itemIndex !== Number(index))) { status.textContent = "ID นี้ถูกใช้งานแล้ว"; return; }
     const previous = JSON.parse(JSON.stringify(items));
     if (index === "") items.push(item); else items[Number(index)] = item;
@@ -173,7 +188,7 @@
   window.addEventListener("message", event => {
     if (event.origin !== location.origin || event.source !== preview.contentWindow) return;
     if (event.data && event.data.type === "mwa-map-coordinate") {
-      fields.x.value = event.data.x; fields.y.value = event.data.y; status.textContent = "รับพิกัดจากแผนที่แล้ว";
+      fields.lat.value = event.data.lat; fields.lng.value = event.data.lng; status.textContent = "รับพิกัด Latitude/Longitude จาก Google Maps แล้ว";
     }
   });
 
