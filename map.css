@@ -138,9 +138,12 @@ h1 { margin: 0; font-size: clamp(20px, 2.2vw, 30px); line-height: 1.2; }
 .label-dot { width: 7px; height: 7px; border: 2px solid rgba(255,255,255,.65); border-radius: 50%; background: #fff; }
 .google-map-label { position: absolute; z-index: 2; transform: translate(6px, -50%); }
 .google-map-label:hover, .google-map-label:focus { transform: translate(6px, -50%) scale(1.06); }
-.gm-style .popup-card { min-width: 260px; max-width: 330px; padding: 3px 2px; text-align: left; }
-.gm-style .gm-style-iw-c { border-radius: 10px; }
-.gm-style .gm-style-iw-d { overflow: auto !important; }
+.gm-style .popup-card { min-width: 260px; max-width: 330px; padding: 3px 28px 3px 2px; text-align: left; }
+.gm-style .gm-style-iw-c { padding: 12px !important; border-radius: 10px; }
+.gm-style .gm-style-iw-d { overflow: auto !important; padding: 0 !important; }
+.gm-style .gm-style-iw-chr { position: absolute !important; top: 0; right: 0; z-index: 4; width: 0; height: 0 !important; min-height: 0 !important; overflow: visible; }
+.gm-style .gm-style-iw-ch { display: none !important; }
+.gm-style .gm-ui-hover-effect { position: absolute !important; top: 4px !important; right: 4px !important; width: 28px !important; height: 28px !important; margin: 0 !important; }
 .plant-popup .leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 12px 35px rgba(3,30,57,.25); }
 .plant-popup .leaflet-popup-content { margin: 16px 17px; }
 .popup-card h3 { margin: 7px 0 0; color: var(--navy-900); font-size: 17px; line-height: 1.35; }
