@@ -209,11 +209,12 @@
   searchInput.addEventListener("input", () => runSearch(searchInput.value));
   document.getElementById("clear-search").addEventListener("click", function () { searchInput.value = ""; document.getElementById("search-results").innerHTML = ""; searchInput.focus(); });
 
-  if (new URLSearchParams(window.location.search).get("admin") === "1") {
-    map.addListener("click", event => {
+  map.addListener("click", event => {
+    infoWindow.close();
+    if (new URLSearchParams(window.location.search).get("admin") === "1") {
       window.parent.postMessage({ type: "mwa-map-coordinate", lat: Number(event.latLng.lat().toFixed(8)), lng: Number(event.latLng.lng().toFixed(8)) }, window.location.origin);
-    });
-  }
+    }
+  });
 
   async function checkForLabelUpdates() {
     try {
