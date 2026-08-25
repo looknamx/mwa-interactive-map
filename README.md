@@ -11,7 +11,7 @@
 - `map.js` — การสร้างแผนที่ การค้นหา ตัวกรอง Popup และโหมดพิกัด
 - `leaflet-fallback.css` — CSS สำรองสำหรับตำแหน่ง pane และ Label หาก CDN stylesheet ถูกบล็อก
 - `map-data.js` — ข้อมูล Label และประเภทพื้นที่ทั้งหมด
-- `images/plant-map.jpg` — ภาพพื้นหลังแผนที่ ขนาด 992 × 813 พิกเซล
+- `images/plant-map.jpg` — ภาพพื้นหลังแผนที่ ขนาด 991 × 637 พิกเซล
 
 ## การเปิดใช้งานด้วย Live Server
 

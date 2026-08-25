@@ -4,8 +4,8 @@
  */
 window.MAP_CONFIG = {
   imageUrl: "images/plant-map.jpg",
-  imageWidth: 992,
-  imageHeight: 813,
+  imageWidth: 991,
+  imageHeight: 637,
   categories: {
     production: { label: "ระบบผลิตน้ำ", color: "#1769e0" },
     transmission: { label: "ระบบส่งน้ำ", color: "#00aeca" },
