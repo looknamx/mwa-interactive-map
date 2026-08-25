@@ -8,8 +8,10 @@ const ALLOWED_ORIGINS = new Set([
 
 function corsHeaders(request) {
   const origin = request.headers.get("Origin") || "";
+  const url = new URL(request.url);
+  const isPublicRead = request.method === "GET" && (url.pathname === "/api/labels" || url.pathname === "/api/health");
   return {
-    "Access-Control-Allow-Origin": ALLOWED_ORIGINS.has(origin) ? origin : "https://looknamx.github.io",
+    "Access-Control-Allow-Origin": isPublicRead ? "*" : (ALLOWED_ORIGINS.has(origin) ? origin : "https://looknamx.github.io"),
     "Access-Control-Allow-Headers": "Authorization, Content-Type",
     "Access-Control-Allow-Methods": "GET, POST, PUT, OPTIONS",
     "Access-Control-Max-Age": "86400",
