@@ -6,6 +6,7 @@ window.MAP_CONFIG = {
   imageUrl: "images/plant-map.jpg",
   imageWidth: 991,
   imageHeight: 637,
+  apiUrl: "https://mwa-interactive-map-api.bitg-boardroom.workers.dev",
   categories: {
     production: { label: "ระบบผลิตน้ำ", color: "#1769e0" },
     transmission: { label: "ระบบส่งน้ำ", color: "#00aeca" },

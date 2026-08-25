@@ -1,13 +1,16 @@
-(function () {
+(async function () {
   "use strict";
 
   const config = window.MAP_CONFIG;
-  const storageKey = "mwa-map-labels-v1";
   let labels = window.MAP_LABELS;
   try {
-    const storedLabels = JSON.parse(localStorage.getItem(storageKey));
-    if (Array.isArray(storedLabels)) labels = storedLabels;
-  } catch (error) { console.warn("ไม่สามารถอ่านข้อมูล Label ที่บันทึกไว้ได้", error); }
+    if (config.apiUrl) {
+      const response = await fetch(config.apiUrl + "/api/labels", { cache: "no-store" });
+      if (!response.ok) throw new Error("API " + response.status);
+      const result = await response.json();
+      if (Array.isArray(result.labels) && result.labels.length) labels = result.labels;
+    }
+  } catch (error) { console.warn("ไม่สามารถโหลด Label จาก API จึงใช้ข้อมูลสำรอง", error); }
   const mapElement = document.getElementById("map");
   const errorElement = document.getElementById("map-error");
 

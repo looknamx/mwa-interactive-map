@@ -1,0 +1,8 @@
+name = "mwa-interactive-map-api"
+main = "src/worker.js"
+compatibility_date = "2026-08-25"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mwa-interactive-map"
+database_id = "af727d06-cdf1-4f09-b672-1d83c36bba66"
