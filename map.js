@@ -3,12 +3,14 @@
 
   const config = window.MAP_CONFIG;
   let labels = window.MAP_LABELS;
+  let labelsSignature = JSON.stringify(labels);
   try {
     if (config.apiUrl) {
-      const response = await fetch(config.apiUrl + "/api/labels", { cache: "no-store" });
+      const response = await fetch(config.apiUrl + "/api/labels?t=" + Date.now(), { cache: "no-store" });
       if (!response.ok) throw new Error("API " + response.status);
       const result = await response.json();
-      if (Array.isArray(result.labels) && result.labels.length) labels = result.labels;
+      if (Array.isArray(result.labels)) labels = result.labels;
+      labelsSignature = JSON.stringify(labels);
     }
   } catch (error) { console.warn("ไม่สามารถโหลด Label จาก API จึงใช้ข้อมูลสำรอง", error); }
   const mapElement = document.getElementById("map");
@@ -201,6 +203,23 @@
     map.setMinZoom(fitZoom);
     if (map.getZoom() < fitZoom) map.setZoom(fitZoom);
     map.panInsideBounds(bounds, { animate: false });
+  });
+  async function checkForLabelUpdates() {
+    if (!config.apiUrl) return;
+    try {
+      const response = await fetch(config.apiUrl + "/api/labels?t=" + Date.now(), { cache: "no-store" });
+      if (!response.ok) return;
+      const result = await response.json();
+      if (Array.isArray(result.labels) && JSON.stringify(result.labels) !== labelsSignature) {
+        window.location.reload();
+      }
+    } catch (error) {
+      // รักษาแผนที่ชุดปัจจุบันไว้หากเครือข่ายขัดข้องชั่วคราว
+    }
+  }
+  window.setInterval(checkForLabelUpdates, 10000);
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) checkForLabelUpdates();
   });
   if (window.parent !== window) window.parent.postMessage({ type: "mwa-map-ready" }, window.location.origin);
 })();
