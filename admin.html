@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>ระบบจัดการแผนที่ | การประปานครหลวง</title>
-  <link rel="stylesheet" href="admin.css?v=5"><link rel="stylesheet" href="pin.css?v=5">
+  <link rel="stylesheet" href="admin.css?v=6"><link rel="stylesheet" href="pin.css?v=5">
 </head>
 <body>
   <section id="pin-gate" class="pin-gate"><form id="pin-form" class="pin-card"><div class="pin-mark">กปน.</div><small>สำหรับผู้ดูแลระบบ</small><h2>กรอกรหัส PIN</h2><p>ใส่รหัสตัวเลข 4 หลักเพื่อแก้ไขข้อมูลแผนที่</p><input id="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="one-time-code" aria-label="รหัส PIN 4 หลัก" required autofocus><button type="submit">เข้าสู่ระบบ</button><span id="pin-error" aria-live="polite"></span></form></section>
@@ -25,7 +25,7 @@
       </form>
       <p id="admin-status" class="admin-status" aria-live="polite"></p>
     </aside>
-    <section class="workspace"><div class="preview-head"><div><strong>ตัวอย่าง Google Maps</strong><span>คลิกบนแผนที่เพื่อกรอก Latitude และ Longitude</span></div><button id="reset-data" type="button">คืนค่าข้อมูลเริ่มต้น</button></div><iframe id="map-preview" src="map.html?admin=1&amp;v=8" title="ตัวอย่าง Google Maps สำหรับกำหนดตำแหน่ง"></iframe><div class="list-head"><h2>Label ทั้งหมด</h2><span id="label-count"></span></div><div id="label-list" class="label-list"></div></section>
+    <section class="workspace"><div class="preview-head"><div><strong>ตัวอย่าง Google Maps</strong><span>คลิกบนแผนที่เพื่อกรอก Latitude และ Longitude</span></div><button id="reset-data" type="button">คืนค่าข้อมูลเริ่มต้น</button></div><iframe id="map-preview" src="map.html?admin=1&amp;v=8" title="ตัวอย่าง Google Maps สำหรับกำหนดตำแหน่ง"></iframe><div class="list-head"><h2>Label ทั้งหมด</h2><span id="label-count"></span></div><div class="label-tools" role="search" aria-label="ค้นหาและจัดเรียง Label"><label class="label-search"><span>ค้นหา</span><input id="label-search" type="search" placeholder="ค้นหาชื่อ, ข้อความ Label หรือ ID..." autocomplete="off"></label><label><span>ประเภท</span><select id="label-category-filter"><option value="all">ทุกประเภท</option><option value="production">ระบบผลิตน้ำ</option><option value="transmission">ระบบส่งน้ำ</option><option value="civil">งานโยธา</option><option value="support">อาคารสนับสนุน</option></select></label><label><span>เรียงตาม</span><select id="label-sort"><option value="original">ลำดับเดิม</option><option value="label-asc">ชื่อ Label ก → ฮ / A → Z</option><option value="label-desc">ชื่อ Label ฮ → ก / Z → A</option><option value="category">ประเภทพื้นที่</option></select></label><button id="clear-label-filters" type="button">ล้างตัวกรอง</button></div><p id="label-empty" class="label-empty" hidden>ไม่พบ Label ที่ตรงกับการค้นหา</p><div id="label-list" class="label-list"></div></section>
   </main>
-  <script src="map-data.js?v=5"></script><script src="admin-auth.js?v=5"></script><script src="admin.js?v=5"></script>
+  <script src="map-data.js?v=5"></script><script src="admin-auth.js?v=5"></script><script src="admin.js?v=6"></script>
 </body></html>

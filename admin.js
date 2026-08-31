@@ -3,6 +3,7 @@
   const defaults = JSON.parse(JSON.stringify(window.MAP_LABELS));
   const apiUrl = window.MAP_CONFIG.apiUrl;
   const colors = { production: "#1769e0", transmission: "#00aeca", civil: "#f28a2e", support: "#27a66a" };
+  const categoryOrder = { production: 0, transmission: 1, civil: 2, support: 3 };
   let items = defaults;
   const byId = id => document.getElementById(id);
   const form = byId("label-form");
@@ -104,7 +105,21 @@
   function render() {
     const list = byId("label-list");
     list.innerHTML = "";
-    items.forEach((item, index) => {
+    const query = byId("label-search").value.trim().toLocaleLowerCase("th");
+    const category = byId("label-category-filter").value;
+    const sort = byId("label-sort").value;
+    const visibleItems = items.map((item, index) => ({ item, index })).filter(({ item }) => {
+      const matchesCategory = category === "all" || item.category === category;
+      const searchableText = [item.id, item.label, item.name, item.description].join(" ").toLocaleLowerCase("th");
+      return matchesCategory && (!query || searchableText.includes(query));
+    });
+    if (sort === "label-asc" || sort === "label-desc") {
+      const direction = sort === "label-asc" ? 1 : -1;
+      visibleItems.sort((a, b) => direction * String(a.item.label).localeCompare(String(b.item.label), "th", { sensitivity: "base", numeric: true }));
+    } else if (sort === "category") {
+      visibleItems.sort((a, b) => (categoryOrder[a.item.category] ?? 99) - (categoryOrder[b.item.category] ?? 99) || String(a.item.label).localeCompare(String(b.item.label), "th", { sensitivity: "base", numeric: true }));
+    }
+    visibleItems.forEach(({ item, index }) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "label-card";
@@ -113,7 +128,8 @@
       button.addEventListener("click", () => edit(index));
       list.appendChild(button);
     });
-    byId("label-count").textContent = items.length + " รายการ";
+    byId("label-empty").hidden = visibleItems.length !== 0;
+    byId("label-count").textContent = visibleItems.length === items.length ? items.length + " รายการ" : "พบ " + visibleItems.length + " จาก " + items.length + " รายการ";
   }
 
   function edit(index) {
@@ -148,6 +164,16 @@
   });
 
   byId("new-label").addEventListener("click", clearForm);
+  byId("label-search").addEventListener("input", render);
+  byId("label-category-filter").addEventListener("change", render);
+  byId("label-sort").addEventListener("change", render);
+  byId("clear-label-filters").addEventListener("click", function () {
+    byId("label-search").value = "";
+    byId("label-category-filter").value = "all";
+    byId("label-sort").value = "original";
+    render();
+    byId("label-search").focus();
+  });
   byId("add-document").addEventListener("click", function () { addDocumentRow(); });
   byId("delete-label").addEventListener("click", async () => {
     const index = Number(fields.index.value);
