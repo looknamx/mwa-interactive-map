@@ -9,7 +9,7 @@ window.MAP_CONFIG = {
   apiUrl: "https://mwa-interactive-map-api.bitg-boardroom.workers.dev",
   googleMapsApiKey: "AIzaSyDzm4Pq1MkdIsxspNABAq-xsQy5NzV6rDM",
   center: { lat: 13.880619783012458, lng: 100.55486309758739 },
-  initialZoom: 16,
+  initialZoom: 14,
   categories: {
     production: { label: "ระบบผลิตน้ำ", color: "#1769e0" },
     transmission: { label: "ระบบส่งน้ำ", color: "#00aeca" },
