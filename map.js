@@ -6,7 +6,6 @@
   let labels = window.MAP_LABELS || [];
   let labelsSignature = "";
   let map;
-  let infoWindow;
   const overlays = new Map();
 
   function normalizeLabel(item) {
@@ -36,19 +35,6 @@
     labelsSignature = JSON.stringify(labels);
   }
 
-  function loadGoogleMaps() {
-    if (window.google && window.google.maps) return Promise.resolve();
-    return new Promise((resolve, reject) => {
-      const callbackName = "mwaGoogleMapsReady";
-      window[callbackName] = function () { delete window[callbackName]; resolve(); };
-      const script = document.createElement("script");
-      script.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(config.googleMapsApiKey) + "&callback=" + callbackName + "&loading=async&v=weekly&language=th&region=TH";
-      script.async = true;
-      script.onerror = () => reject(new Error("Google Maps load failed"));
-      document.head.appendChild(script);
-    });
-  }
-
   function popupContent(item) {
     const category = config.categories[item.category] || config.categories.support;
     const files = item.downloads && item.downloads.length
@@ -68,55 +54,14 @@
       "</article>";
   }
 
-  function createMapLabelClass() {
-    return class MapLabel extends google.maps.OverlayView {
-    constructor(item) {
-      super();
-      this.item = item;
-      this.position = new google.maps.LatLng(item.lat, item.lng);
-      this.element = null;
-      this.visible = true;
-    }
-    onAdd() {
-      const category = config.categories[this.item.category] || config.categories.support;
-      const element = document.createElement("button");
-      element.type = "button";
-      element.className = "map-label google-map-label";
-      element.style.setProperty("--label-color", category.color);
-      element.innerHTML = '<span class="label-dot"></span><span>' + escapeHtml(this.item.label) + "</span>";
-      element.title = this.item.name;
-      element.addEventListener("click", event => {
-        event.stopPropagation();
-        infoWindow.setContent(popupContent(this.item));
-        infoWindow.setPosition(this.position);
-        infoWindow.open({ map, shouldFocus: false });
-      });
-      this.element = element;
-      this.getPanes().overlayMouseTarget.appendChild(element);
-    }
-    draw() {
-      if (!this.element) return;
-      const point = this.getProjection().fromLatLngToDivPixel(this.position);
-      this.element.style.left = point.x + "px";
-      this.element.style.top = point.y + "px";
-      this.element.hidden = !this.visible;
-    }
-    onRemove() {
-      if (this.element) this.element.remove();
-      this.element = null;
-    }
-    setVisible(visible) { this.visible = visible; if (this.element) this.element.hidden = !visible; }
-    };
-  }
-
   function resetView() {
-    infoWindow.close();
-    map.setCenter(config.center);
-    map.setZoom(config.initialZoom);
+    map.closePopup();
+    map.setView([config.center.lat, config.center.lng], config.initialZoom, { animate: true });
   }
 
   function buildCategoryFilters() {
     const container = document.getElementById("category-filters");
+    container.innerHTML = "";
     Object.keys(config.categories).forEach(key => {
       const category = config.categories[key];
       const row = document.createElement("label");
@@ -127,7 +72,15 @@
     container.addEventListener("change", event => {
       const input = event.target.closest("input[data-category]");
       if (!input) return;
-      overlays.forEach(({ overlay, data }) => { if (data.category === input.dataset.category) overlay.setVisible(input.checked); });
+      overlays.forEach(({ marker, data }) => {
+        if (data.category === input.dataset.category) {
+          if (input.checked) {
+            if (!map.hasLayer(marker)) marker.addTo(map);
+          } else {
+            if (map.hasLayer(marker)) map.removeLayer(marker);
+          }
+        }
+      });
       updateToggleAllText();
       runSearch(document.getElementById("label-search").value);
     });
@@ -155,11 +108,12 @@
       button.type = "button";
       button.innerHTML = '<span class="result-dot" style="--result-color:' + config.categories[item.category].color + '"></span><span><strong>' + escapeHtml(item.label) + "</strong><small>" + escapeHtml(item.name) + "</small></span>";
       button.addEventListener("click", () => {
-        map.panTo({ lat: item.lat, lng: item.lng });
-        map.setZoom(Math.max(map.getZoom(), 18));
-        infoWindow.setContent(popupContent(item));
-        infoWindow.setPosition({ lat: item.lat, lng: item.lng });
-        infoWindow.open({ map, shouldFocus: false });
+        const entry = overlays.get(item.id);
+        if (entry) {
+          if (!map.hasLayer(entry.marker)) entry.marker.addTo(map);
+          map.setView([item.lat, item.lng], Math.max(map.getZoom(), 18), { animate: true });
+          entry.marker.openPopup();
+        }
         if (window.innerWidth < 760) document.querySelector(".map-panel").scrollIntoView({ behavior: "smooth" });
       });
       results.appendChild(button);
@@ -167,27 +121,68 @@
   }
 
   try {
-    if (!config || !config.googleMapsApiKey) throw new Error("Missing Google Maps configuration");
-    await Promise.all([loadLabels(), loadGoogleMaps()]);
-    map = new google.maps.Map(mapElement, {
-      center: config.center,
+    if (!window.L) throw new Error("Leaflet library not loaded");
+    await loadLabels();
+
+    map = L.map(mapElement, {
+      center: [config.center.lat, config.center.lng],
       zoom: config.initialZoom,
-      mapTypeId: "satellite",
-      tilt: 0,
-      streetViewControl: false,
-      mapTypeControl: true,
-      fullscreenControl: true,
-      rotateControl: false,
-      gestureHandling: "greedy",
-      clickableIcons: false
+      zoomControl: true,
+      attributionControl: true
     });
-    infoWindow = new google.maps.InfoWindow({ maxWidth: 350 });
-    const MapLabel = createMapLabelClass();
+
+    const esriSatellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      maxNativeZoom: 18,
+      maxZoom: 19,
+      attribution: "Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics"
+    });
+
+    const openStreetMap = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+    });
+
+    const esriLabels = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", {
+      maxNativeZoom: 18,
+      maxZoom: 19,
+      attribution: "Tiles &copy; Esri"
+    });
+
+    // แสดงแผนที่ดาวเทียม Esri เป็นค่าเริ่มต้น
+    esriSatellite.addTo(map);
+
+    const baseMaps = {
+      "ภาพถ่ายดาวเทียม (Esri Satellite)": esriSatellite,
+      "แผนที่ถนน (OpenStreetMap)": openStreetMap
+    };
+
+    const overlayMaps = {
+      "ชื่อถนนและสถานที่": esriLabels
+    };
+
+    L.control.layers(baseMaps, overlayMaps, { position: "topright" }).addTo(map);
+
     labels.forEach(item => {
-      const overlay = new MapLabel(item);
-      overlay.setMap(map);
-      overlays.set(item.id, { overlay, data: item });
+      const category = config.categories[item.category] || config.categories.support;
+      const icon = L.divIcon({
+        className: "map-label-wrapper",
+        html: '<span class="map-label" style="--label-color:' + category.color + '"><span class="label-dot"></span><span>' + escapeHtml(item.label) + "</span></span>",
+        iconSize: null,
+        iconAnchor: [-5, 0],
+        popupAnchor: [15, -15]
+      });
+
+      const marker = L.marker([item.lat, item.lng], {
+        icon: icon,
+        title: item.name,
+        riseOnHover: true,
+        keyboard: true
+      }).bindPopup(popupContent(item), { maxWidth: 350, minWidth: 260, className: "plant-popup" });
+
+      marker.addTo(map);
+      overlays.set(item.id, { marker, data: item });
     });
+
     buildCategoryFilters();
   } catch (error) {
     console.error(error);
@@ -201,22 +196,41 @@
     const inputs = Array.from(document.querySelectorAll("#category-filters input"));
     const show = !inputs.every(input => input.checked);
     inputs.forEach(input => { input.checked = show; });
-    overlays.forEach(({ overlay }) => overlay.setVisible(show));
+    overlays.forEach(({ marker }) => {
+      if (show) {
+        if (!map.hasLayer(marker)) marker.addTo(map);
+      } else {
+        if (map.hasLayer(marker)) map.removeLayer(marker);
+      }
+    });
     updateToggleAllText();
     runSearch(document.getElementById("label-search").value);
   });
+
   const searchInput = document.getElementById("label-search");
   searchInput.addEventListener("input", () => runSearch(searchInput.value));
-  document.getElementById("clear-search").addEventListener("click", function () { searchInput.value = ""; document.getElementById("search-results").innerHTML = ""; searchInput.focus(); });
+  document.getElementById("clear-search").addEventListener("click", function () {
+    searchInput.value = "";
+    document.getElementById("search-results").innerHTML = "";
+    searchInput.focus();
+  });
 
-  map.addListener("click", event => {
-    infoWindow.close();
+  map.on("click", event => {
     if (new URLSearchParams(window.location.search).get("admin") === "1") {
-      window.parent.postMessage({ type: "mwa-map-coordinate", lat: Number(event.latLng.lat().toFixed(8)), lng: Number(event.latLng.lng().toFixed(8)) }, window.location.origin);
+      window.parent.postMessage({
+        type: "mwa-map-coordinate",
+        lat: Number(event.latlng.lat.toFixed(8)),
+        lng: Number(event.latlng.lng.toFixed(8))
+      }, window.location.origin);
     }
   });
 
+  window.addEventListener("resize", () => {
+    if (map) map.invalidateSize();
+  });
+
   async function checkForLabelUpdates() {
+    if (!config.apiUrl) return;
     try {
       const response = await fetch(config.apiUrl + "/api/labels?t=" + Date.now(), { cache: "no-store" });
       if (!response.ok) return;

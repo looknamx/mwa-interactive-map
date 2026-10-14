@@ -7,7 +7,6 @@ window.MAP_CONFIG = {
   imageWidth: 991,
   imageHeight: 637,
   apiUrl: "https://mwa-interactive-map-api.bitg-boardroom.workers.dev",
-  googleMapsApiKey: "AIzaSyDzm4Pq1MkdIsxspNABAq-xsQy5NzV6rDM",
   center: { lat: 13.880619783012458, lng: 100.55486309758739 },
   initialZoom: 17,
   categories: {

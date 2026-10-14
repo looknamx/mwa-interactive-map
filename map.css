@@ -131,6 +131,26 @@ h1 { margin: 0; font-size: clamp(20px, 2.2vw, 30px); line-height: 1.2; }
 .leaflet-container { font-family: inherit; }
 .leaflet-control-zoom { border: 0 !important; box-shadow: 0 4px 18px rgba(6,27,53,.2) !important; }
 .leaflet-control-zoom a { color: var(--navy-900) !important; border-color: #d7e3eb !important; }
+.leaflet-control-layers {
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 18px rgba(6, 27, 53, 0.15) !important;
+  font-family: inherit !important;
+  font-size: 11px !important;
+  color: var(--navy-900) !important;
+}
+.leaflet-control-layers-expanded {
+  padding: 8px 12px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(4px);
+}
+.leaflet-control-layers label {
+  margin: 4px 0 !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 .map-label-wrapper { width: auto !important; height: auto !important; }
 .map-label { position: relative; display: inline-flex; align-items: center; gap: 7px; padding: 6px 10px 6px 7px; border: 1px solid color-mix(in srgb, var(--label-color) 60%, #fff); border-radius: 5px; color: #fff; background: color-mix(in srgb, var(--label-color) 88%, #09233e); box-shadow: 0 4px 10px rgba(0,27,50,.24); font-size: 10px; font-weight: 800; line-height: 1; letter-spacing: .03em; white-space: nowrap; transform: translateY(-50%); transition: transform .16s, box-shadow .16s; }
 .map-label::before { content: ""; position: absolute; left: -5px; top: 50%; width: 8px; height: 8px; background: inherit; border-left: 1px solid color-mix(in srgb, var(--label-color) 60%, #fff); border-bottom: 1px solid color-mix(in srgb, var(--label-color) 60%, #fff); transform: translateY(-50%) rotate(45deg); }

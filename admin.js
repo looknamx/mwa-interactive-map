@@ -214,7 +214,7 @@
   window.addEventListener("message", event => {
     if (event.origin !== location.origin || event.source !== preview.contentWindow) return;
     if (event.data && event.data.type === "mwa-map-coordinate") {
-      fields.lat.value = event.data.lat; fields.lng.value = event.data.lng; status.textContent = "รับพิกัด Latitude/Longitude จาก Google Maps แล้ว";
+      fields.lat.value = event.data.lat; fields.lng.value = event.data.lng; status.textContent = "รับพิกัด Latitude/Longitude จากแผนที่แล้ว";
     }
   });
 
