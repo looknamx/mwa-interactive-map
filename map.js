@@ -137,30 +137,20 @@
       attribution: "Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics"
     });
 
-    const openStreetMap = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
-    });
-
     const esriLabels = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", {
       maxNativeZoom: 18,
       maxZoom: 19,
       attribution: "Tiles &copy; Esri"
     });
 
-    // แสดงแผนที่ดาวเทียม Esri เป็นค่าเริ่มต้น
+    // แสดงแผนที่ดาวเทียม Esri เป็นหลัก
     esriSatellite.addTo(map);
-
-    const baseMaps = {
-      "ภาพถ่ายดาวเทียม (Esri Satellite)": esriSatellite,
-      "แผนที่ถนน (OpenStreetMap)": openStreetMap
-    };
 
     const overlayMaps = {
       "ชื่อถนนและสถานที่": esriLabels
     };
 
-    L.control.layers(baseMaps, overlayMaps, { position: "topright" }).addTo(map);
+    L.control.layers(null, overlayMaps, { position: "topright" }).addTo(map);
 
     labels.forEach(item => {
       const category = config.categories[item.category] || config.categories.support;
